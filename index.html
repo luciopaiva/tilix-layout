@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tilix Layout Builder</title>
+
+    <style>
+        :root {
+            --app-margin: 10px;
+            --app-lateral-margin: 200px;
+            --pane-margin: 5px;
+            --pane-padding: 0px;
+            --pane-border: 1px;
+            --terminal-padding: 10px;
+            --border-color: #7a7a7a;
+        }
+        html{
+            margin: 0;
+            padding: 0;
+            border-top: 3px solid gray;
+            border-bottom: 3px solid gray;
+        }
+        body {
+            margin: var(--app-margin) var(--app-lateral-margin);
+            padding: 0;
+            overflow: hidden;
+            height: calc(100vh - 2 * var(--app-margin));
+            font-family: sans-serif;
+            font-size: 16px;
+            background-color: #dddddd;
+            box-sizing: border-box;
+        }
+        h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 24px;
+        }
+        body {
+            display: grid;
+            grid-template-rows: [header-top] 50px [header-bottom] 500px [demo-bottom] auto [footer-top] 50px [footer-bottom];
+            grid-template-columns: [left-border] 300px [main-area] auto [right-border];
+            grid-column-gap: 10px;
+        }
+        body > * {
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            grid-column: left-border / right-border;
+            grid-row: header-top / header-bottom;
+            align-self: center;
+
+            display: flex;
+            flex-direction: row;
+        }
+        .header img {
+            position: relative;
+            top: -4px;
+            margin-right: 5px;
+        }
+        img {
+            width: 30px;
+        }
+        .machines-panel {
+            grid-column: left-border / main-area;
+            grid-row: header-bottom / footer-top;
+        }
+        .script-panel {
+            grid-column: main-area / right-border;
+            grid-row: demo-bottom / footer-top;
+            overflow-y: hidden;
+            background-color: #F0F7F4;
+            color: #2F4F4F;
+        }
+        .footer {
+            grid-column: left-border / right-border;
+            grid-row: footer-top / footer-bottom;
+            align-self: center;
+            justify-self: center;
+            text-align: center;
+            font-size: 12px;
+        }
+        .machines-panel textarea {
+            --padding: 10px;
+            --border: 1px;
+            margin: 0;
+            padding: var(--padding);
+            font-family: monospace;
+            width: calc(100% - 2 * (var(--padding) + var(--border)));
+            height: calc(100% - 2 * (var(--padding) + var(--border)));
+
+            resize: none;
+            border: var(--border) solid gray;
+        }
+        #script {
+            --padding: 10px;
+            --border: 1px;
+            margin: 0;
+            padding: var(--padding);
+            width: calc(100% - 2 * (var(--padding) + var(--border)));
+            height: calc(100% - 2 * (var(--padding) + var(--border)));
+
+            overflow-y: scroll;
+
+            font-family: monospace;
+            font-size: 10px;
+            border: var(--border) solid gray;
+        }
+        .session-demo {
+            grid-column: main-area / right-border;
+            grid-row: header-bottom / demo-bottom;
+
+            margin: 0;
+            padding: 0;
+        }
+        .session-demo > .hpane, .session-demo > .vpane {
+            margin: 0;
+            width: calc(100% - 2 * (var(--pane-padding) + var(--pane-border)));
+        }
+        .hpane {
+            margin: var(--pane-margin);
+            padding: var(--pane-padding);
+            border: var(--pane-border) solid var(--border-color);
+            border-radius: 3px;
+            background-color: #70ABAF;
+
+            display: flex;
+            flex-direction: row;
+            width: calc(100% - 2 * (var(--pane-margin) + var(--pane-padding) + var(--pane-border)));
+            height: calc(100% - 2 * (var(--pane-margin) + var(--pane-padding) + var(--pane-border)));
+        }
+        .vpane {
+            margin: var(--pane-margin);
+            padding: var(--pane-padding);
+            border: var(--pane-border) solid var(--border-color);
+            border-radius: 3px;
+            background-color: #99E1D9;
+
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - 2 * (var(--pane-margin) + var(--pane-padding) + var(--pane-border)));
+            height: calc(100% - 2 * (var(--pane-margin) + var(--pane-padding) + var(--pane-border)));
+        }
+        .terminal {
+            margin: var(--pane-margin);
+            padding: var(--terminal-padding);
+            border: var(--pane-border) solid var(--border-color);
+            border-radius: 3px;
+            background-color: #F0F7F4;
+            width: calc(100% - 2 * (var(--pane-margin) + var(--terminal-padding) + var(--pane-border)));
+            height: calc(100% - 2 * (var(--pane-margin) + var(--terminal-padding) + var(--pane-border)));
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .download-dialog {
+            position: absolute;
+            right: calc(var(--app-lateral-margin) + 70px);
+            bottom: 100px;
+            border-radius: 3px;
+            padding: 10px;
+            display: flex;
+            flex-direction: row;
+            background-color: #99E1D9;
+            box-shadow: 3px 3px 1px gray;
+            align-items: center;
+            cursor: pointer;
+        }
+        .download-dialog:hover {
+            background-color: #F0F7F4;
+        }
+        .download-dialog img {
+            position: relative;
+            top: 2px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div><img src="terminal-icon.svg" alt="Terminal icon"></div>
+    <div><h1>Tilix layout builder</h1></div>
+</div>
+
+<div class="machines-panel">
+    <textarea name="machines" id="machines" cols="30" rows="10"></textarea>
+</div>
+
+<div class="session-demo" id="demo">
+</div>
+
+<div class="script-panel">
+    <pre id="script">
+        Hello
+        Goodbye
+    </pre>
+</div>
+
+<div class="footer">
+    Tilix layout builder by <a href="https://luciopaiva.com" target="_blank">Lucio Paiva</a>, 2018.<br>
+    Icons by <a href="https://www.iconfinder.com/paomedia" target="_blank">Paomedia</a>, licensed under <a
+        href="http://creativecommons.org/licenses/by/3.0/" target="_blank">CC 3.0</a>.
+</div>
+
+<div class="download-dialog" id="download-button">
+    <div><img src="save-icon.svg" alt="Save to file"></div>
+    <div>download JSON</div>
+</div>
+
+<script src="index.js"></script>
+
+</body>
+</html>
