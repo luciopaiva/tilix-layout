@@ -195,7 +195,7 @@ class App {
     }
 
     download() {
-        App.downloadAsJson(this.scriptElement.innerText, "tilix-sample.json");
+        App.downloadAsJson(this.scriptElement.innerText, "tilix.json");
     }
 
     static downloadAsJson(data, fileName) {
