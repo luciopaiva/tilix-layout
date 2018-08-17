@@ -2,17 +2,17 @@
 class Terminal {
 
     constructor (command = "") {
-        this.type = "Terminal";
         this.directory = "";
+        this.height = 0;
         this.overrideCommand = command;
         this.profile = "";
         this.readOnly = false;
         this.synchronizedInput = true;
+        this.type = "Terminal";
         this.uuid = "";
         this.width = 0;
-        this.height = 0;
 
-        // uncomment if you want to set these fields as well
+        // uncomment if you want to set this field as well
         // this.title = "${id}: ${title}";
     }
 }
@@ -25,14 +25,14 @@ class Pane {
      * @param {Number} orientation - either `0` (horizontal pane) or `1` (vertical pane)
      */
     constructor (left, right, orientation) {
-        this.type = "Paned";
-        this.orientation = orientation;  // 0 === row, 1 === column
         /** @type {Terminal} */
         this.child1 = left;
         /** @type {Terminal} */
         this.child2 = right;
+        this.orientation = orientation;  // 0 === row, 1 === column
         this.position = 0;
         this.ratio = 0;  // [0, 1]
+        this.type = "Paned";
     }
 }
 
@@ -45,16 +45,14 @@ class Session {
      * @param {Pane|Terminal} paneOrSingleTerminal
      */
     constructor (paneOrSingleTerminal) {
-        this.type = "Session";
         this.child = paneOrSingleTerminal;
+        this.height = 0;
         this.name = "Default";
+        this.synchronizedInput = false;
+        this.type = "Session";
+        this.uuid = "";
         this.version = "1.0";
         this.width = 0;
-        this.height = 0;
-
-        // uncomment if you want to set these fields as well
-        // this.synchronizedInput = false;
-        // this.uuid = "";
     }
 }
 
@@ -218,6 +216,6 @@ class App {
 }
 
 App.SCREEN_WIDTH = 1920;
-App.SCREEN_HEIGHT = 1080;
+App.SCREEN_HEIGHT = 1006;
 
 new App();
