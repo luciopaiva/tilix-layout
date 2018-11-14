@@ -91,7 +91,7 @@ class App {
         this.downloadButton.addEventListener("click", () => this.download());
 
         // generate demo machine names
-        this.machinesElement.value = Array.from(Array(15), (e, i) => `machine${i + 1}`).join("\n");
+        this.machinesElement.value = ["machine-foo-1..11", "buzz", "node-bar5..7"].join("\n");
 
         this.machinesElement.addEventListener("input", () => this.update());
         this.update();
@@ -179,6 +179,23 @@ class App {
 
         if (this.hostNames.length === 0) {
             return;
+        }
+
+        // expand compound names (in the form `<prefix> <number> ".." <number> <suffix>`)
+        for (let i = 0; i < this.hostNames.length; i++) {
+            const match = /^(.*?)(\d+)\.\.(\d+)(.*?)$/.exec(this.hostNames[i]);
+            if (!match) {
+                continue;
+            }
+            const [begin, end] = [parseInt(match[2], 10), parseInt(match[3], 10)];
+            if (end - begin < 1) {
+                continue;
+            }
+            const prefix = match[1];
+            const suffix = match[4];
+            const machineNames = Array.from(Array(end - begin + 1), (e, i) => `${prefix}${begin + i}${suffix}`);
+            this.hostNames.splice(i, 1, ...machineNames);
+            i += machineNames.length - 1;  // array was changed - jump elements that were just inserted
         }
 
         this.gridWidth = Math.ceil(Math.sqrt(this.hostNames.length));
