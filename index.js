@@ -1,15 +1,24 @@
 
+// taken from https://stackoverflow.com/a/2117523/778272
+function uuidv4() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        const v = c === "x" ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 class Terminal {
 
     constructor (command = "") {
         this.directory = "";
         this.height = 0;
         this.overrideCommand = command;
-        this.profile = "";
+        this.profile = uuidv4();
         this.readOnly = false;
         this.synchronizedInput = true;
         this.type = "Terminal";
-        this.uuid = "";
+        // this.uuid = "";
         this.width = 0;
 
         // uncomment if you want to set this field as well
@@ -82,7 +91,7 @@ class App {
         this.downloadButton.addEventListener("click", () => this.download());
 
         // generate demo machine names
-        this.machinesElement.value = Array.from(Array(15), (e, i) => `machine${i + 1}`).join("\n");
+        this.machinesElement.value = ["machine-foo-1..11", "buzz", "node-bar5..7"].join("\n");
 
         this.machinesElement.addEventListener("input", () => this.update());
         this.update();
@@ -170,6 +179,23 @@ class App {
 
         if (this.hostNames.length === 0) {
             return;
+        }
+
+        // expand compound names (in the form `<prefix> <number> ".." <number> <suffix>`)
+        for (let i = 0; i < this.hostNames.length; i++) {
+            const match = /^(.*?)(\d+)\.\.(\d+)(.*?)$/.exec(this.hostNames[i]);
+            if (!match) {
+                continue;
+            }
+            const [begin, end] = [parseInt(match[2], 10), parseInt(match[3], 10)];
+            if (end - begin < 1) {
+                continue;
+            }
+            const prefix = match[1];
+            const suffix = match[4];
+            const machineNames = Array.from(Array(end - begin + 1), (e, i) => `${prefix}${begin + i}${suffix}`);
+            this.hostNames.splice(i, 1, ...machineNames);
+            i += machineNames.length - 1;  // array was changed - jump elements that were just inserted
         }
 
         this.gridWidth = Math.ceil(Math.sqrt(this.hostNames.length));
